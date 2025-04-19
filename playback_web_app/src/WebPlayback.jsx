@@ -46,6 +46,8 @@ const WebPlayback = (props) => {
                         return;
                     }
 
+                    console.log(state);
+
                     setTrack(state.track_window.current_track);
                     setPaused(state.paused);
 

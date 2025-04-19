@@ -27,7 +27,9 @@ app.get('/auth/login', (req, res) => {
     console.log('Login');
     var scope = "streaming \
                  user-read-email \
-                 user-read-private"
+                 user-read-private \
+                 playlist-read-private \
+                 playlist-read-collaborative"
   
     var state = generateRandomString(16);
   
