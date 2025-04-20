@@ -25,6 +25,7 @@ const SwipeTracksAdd = () => {
   const device_id = useRef("");
   
   const [trackURIs, setTrackURIs] = useState([]);
+  const [trackURIsAll, setTrackURIsAll] = useState([]);
   const currentTrackURIRef = useRef("");
 
   useEffect(() => {
@@ -40,6 +41,8 @@ const SwipeTracksAdd = () => {
   useEffect(() => {
     const fetchPlaylistTracks = async () => {
       try {
+        setTrackURIs([]);
+        setTrackURIsAll([]);
         const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -51,7 +54,9 @@ const SwipeTracksAdd = () => {
           .map(item => item.track?.uri)
           .filter(uri => uri); // Filter out nulls
 
+        
         setTrackURIs(uris);
+        setTrackURIsAll(uris);
         console.log("Fetched track URIs:", uris);
       } catch (error) {
         console.error("Error fetching playlist data:", error);
@@ -107,7 +112,7 @@ const SwipeTracksAdd = () => {
           setActive(true);
 
           if (current.uri !== currentTrackURIRef.current) {
-            console.log("Current track changed:", current);
+            console.log("Current track changed:", current.name);
             setCurrentTrack(current);
             currentTrackURIRef.current = current.uri;
           }
@@ -160,8 +165,7 @@ const SwipeTracksAdd = () => {
             play: true
           })
         });
-  
-        // Start playing the playlist context
+
         await fetch('https://api.spotify.com/v1/me/player/play', {
           method: 'PUT',
           headers: {
@@ -169,7 +173,18 @@ const SwipeTracksAdd = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            uris: trackURIs // If you want to start with a custom playlist, keep this
+            uris: [] // If you want to start with a custom playlist, keep this
+          })
+        });
+
+        await fetch('https://api.spotify.com/v1/me/player/play', {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            uris: trackURIsAll // If you want to start with a custom playlist, keep this
           })
         });
   
@@ -183,7 +198,11 @@ const SwipeTracksAdd = () => {
     };
   
     startPlayback();
-  }, [trackURIs, device_id.current, token]);
+  }, [trackURIsAll, device_id.current, token]);
+
+  const handleNextTrack = () => {
+    playerRef.current?.nextTrack();
+  }
 
   if (!is_active) {
     return (
@@ -203,19 +222,13 @@ const SwipeTracksAdd = () => {
             trackURI={uri}
             trackURIs={trackURIs}
             setTrackURIs={setTrackURIs}
-            playerRef={playerRef}
+            handleNextTrack={handleNextTrack}
           />
         ))}
       </div>
-            <div className="flex justify-center items-center mt-4">
-        <button className="btn-spotify" onClick={() => playerRef.current?.previousTrack()}>
-            &lt;&lt;
-        </button>
+        <div className="flex justify-center items-center mt-4">
         <button className="btn-spotify" onClick={() => playerRef.current?.togglePlay()}>
             {is_paused ? "PLAY" : "PAUSE"}
-        </button>
-        <button className="btn-spotify" onClick={() => playerRef.current?.nextTrack()}>
-            &gt;&gt;
         </button>
       </div>
     </MobileWrapper>
