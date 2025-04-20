@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 
 const SwipeCards = () => {
@@ -26,56 +26,84 @@ const SwipeCards = () => {
   );
 };
 
-const Card = ({ id, url, setCards, cards, index}) => {
+const Card = ({ id, url, setCards, cards, index }) => {
   const x = useMotionValue(0);
-
   const rotate = useTransform(x, [-150, 150], [-18, 18]);
   const isFront = id === cards[cards.length - 1].id;
   const depth = cards.length - index - 1;
 
-    const opacity= useTransform(x, [-150, 0, 150], [0, 1, 0]);
+  const opacity = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
+  const keepOpacity = useTransform(x, [0, 100], [0, 1]);
+  const removeOpacity = useTransform(x, [-100, 0], [1, 0]);
 
+  const handleSwipeRight = () => {
+    console.log("Swiped right");
+  };
 
-  console.log("Card with index: " + index + " has depth: " + depth);
+  const handleSwipeLeft = () => {
+    console.log("Swiped left");
+  };
 
   const handleDragEnd = () => {
-    if (Math.abs(x.get()) > 100) {
+    if (x.get() > 100) {
       setCards((pv) => pv.filter((v) => v.id !== id));
+      handleSwipeRight();
+    }
+    if (x.get() < -100) {
+      setCards((pv) => pv.filter((v) => v.id !== id));
+      handleSwipeLeft();
     }
   };
 
   return (
-    <motion.img
-      src={url}
-      alt="Placeholder alt"
-      className="h-96 w-72 origin-bottom rounded-lg bg-white object-cover hover:cursor-grab active:cursor-grabbing"
+    <motion.div
+      className="relative h-96 w-72 hover:cursor-grab active:cursor-grabbing"
       style={{
         zIndex: index,
         gridRow: 1,
         gridColumn: 1,
         x,
-        opacity,
         rotate,
+        opacity,
+        scale: isFront ? 1 : 1 - depth * 0.02,
+        y: isFront ? 0 : depth * 8,
         transition: "0.2s ease",
-        scale: isFront ? 1 : 1 - depth * 0.02, // back cards shrink
-        y: isFront ? 0 : depth * 8, // move down slightly
-        boxShadow: isFront
-          ? "0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5)"
-          : undefined,
+        touchAction: "pan-y",
       }}
       animate={{
         scale: isFront ? 1 : 1 - depth * 0.02,
         y: isFront ? 0 : depth * 8,
       }}
       drag={isFront ? "x" : false}
-      dragConstraints={{
-        left: 0,
-        right: 0,
-      }}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.5}
       onDragEnd={handleDragEnd}
-    />
+    >
+      <img
+        src={url}
+        alt="Placeholder alt"
+        className="h-full w-full rounded-lg bg-white object-cover pointer-events-none select-none"
+      />
+
+      {/* Keep! Text */}
+      <motion.div
+        className="absolute top-6 left-6 text-green-500 text-3xl font-bold"
+        style={{ opacity: keepOpacity }}
+      >
+        Keep!
+      </motion.div>
+
+      {/* Remove! Text */}
+      <motion.div
+        className="absolute top-6 right-6 text-red-500 text-3xl font-bold"
+        style={{ opacity: removeOpacity }}
+      >
+        Remove!
+      </motion.div>
+    </motion.div>
   );
 };
+
 
 export default SwipeCards;
 
