@@ -55,6 +55,8 @@ const Card = ({ id, url, setCards, cards, index }) => {
     }
   };
 
+  console.log("Card rendered: " + id);
+
   return (
     <motion.div
       className="relative h-96 w-72 hover:cursor-grab active:cursor-grabbing"

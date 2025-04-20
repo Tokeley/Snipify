@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToken } from './contexts/TokenContext.jsx';
 
-const Playlists = () => {
+const Playlists = ({playlist}) => {
     const [playlists, setPlaylists] = useState([]);
     const navigate = useNavigate();
     const { token } = useToken();

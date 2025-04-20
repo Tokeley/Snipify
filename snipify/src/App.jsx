@@ -44,17 +44,20 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        
         <Route 
           path="/" 
           element={token ? <Navigate to="/playlist-select" /> : <Navigate to="/login" />} 
         />
+
+        <Route path="/playlist/:playlistId" element={<PlaylistPlayer/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/playlist-select" element={<PlaylistSelect />} />
         <Route path="/add-or-remove" element={<AddOrRemoveSelect />} />
         <Route path="/confirm-add" element={<ConfirmAdd />} />
         <Route path="/confirm-remove" element={<ConfirmRemove />} />
         <Route path="/from-tracks-select" element={<FromTracksSelect />} />
-        <Route path="/swipe-add" element={<SwipeTracksAdd />} />
+        <Route path="/swipe-add/:playlistId" element={<SwipeTracksAdd />} />
         <Route path="/swipe-remove" element={<SwipeTracksRemove />} />
       </Routes>
     </Router>
