@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToken } from './contexts/TokenContext.jsx';
 
-const Playlists = ({ token }) => {
+const Playlists = () => {
     const [playlists, setPlaylists] = useState([]);
     const navigate = useNavigate();
+    const { token } = useToken();
   
     useEffect(() => {
       const fetchPlaylists = async () => {

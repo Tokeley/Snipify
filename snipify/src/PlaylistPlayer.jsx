@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { useToken } from './contexts/TokenContext.jsx';
 
 
-const PlaylistPlayer = ({ token }) => {
+const PlaylistPlayer = () => {
+  const { token } = useToken();
+
   const { playlistId } = useParams(); 
   const [is_paused, setPaused] = useState(false);
   const [is_active, setActive] = useState(false);
