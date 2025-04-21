@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useToken } from "../contexts/TokenContext.jsx"; // Needed for Spotify API auth
 
-const TrackCard = ({ trackURI, index, total, setTrackURIs, handleNextTrack }) => {
+const TrackCard = ({ trackURI, index, total, handleNextTrack }) => {
   const { token } = useToken();
   const [trackInfo, setTrackInfo] = useState(null);
   const x = useMotionValue(0);
@@ -44,12 +44,10 @@ const TrackCard = ({ trackURI, index, total, setTrackURIs, handleNextTrack }) =>
   const handleDragEnd = () => {
     if (x.get() > 100) {
       handleNextTrack();
-      setTrackURIs((prev) => prev.filter((uri) => uri !== trackURI));
       handleSwipeRight();
     }
     if (x.get() < -100) {
       handleNextTrack();
-      setTrackURIs((prev) => prev.filter((uri) => uri !== trackURI));
       handleSwipeLeft();
     }
   };

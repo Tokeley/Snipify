@@ -24,8 +24,9 @@ const SwipeTracksAdd = () => {
   const hasSeekedRef = useRef(false); 
   const device_id = useRef("");
   
-  const [trackURIs, setTrackURIs] = useState([]);
   const [trackURIsAll, setTrackURIsAll] = useState([]);
+  const trackURIsAllRef = useRef([]);
+  const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
   const currentTrackURIRef = useRef("");
 
   useEffect(() => {
@@ -41,8 +42,6 @@ const SwipeTracksAdd = () => {
   useEffect(() => {
     const fetchPlaylistTracks = async () => {
       try {
-        setTrackURIs([]);
-        setTrackURIsAll([]);
         const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -54,9 +53,7 @@ const SwipeTracksAdd = () => {
           .map(item => item.track?.uri)
           .filter(uri => uri); // Filter out nulls
 
-        
-        setTrackURIs(uris);
-        setTrackURIsAll(uris);
+        trackURIsAllRef.current = uris;
         console.log("Fetched track URIs:", uris);
       } catch (error) {
         console.error("Error fetching playlist data:", error);
@@ -111,11 +108,19 @@ const SwipeTracksAdd = () => {
           setPaused(state.paused);
           setActive(true);
 
-          if (current.uri !== currentTrackURIRef.current) {
+
             console.log("Current track changed:", current.name);
             setCurrentTrack(current);
             currentTrackURIRef.current = current.uri;
-          }
+            const indexOfCurrentTrack = trackURIsAllRef.current.indexOf(current.uri);
+
+            console.log("Current track URI:", current.uri);
+            console.log("Track URIs All:", trackURIsAllRef.current);
+            console.log("Index of current track:", indexOfCurrentTrack);
+
+            const upcomingTracks = trackURIsAllRef.current.slice(indexOfCurrentTrack+1, indexOfCurrentTrack + 5);
+            console.log("Upcoming tracks:", upcomingTracks);
+            setTrackURIsDisplay(upcomingTracks);
         
           // Handle seeking
           if (
@@ -150,7 +155,7 @@ const SwipeTracksAdd = () => {
   // Start playback when trackURIs are set and device_id is available
   useEffect(() => {
     const startPlayback = async () => {
-      if (trackURIs.length === 0 || !device_id.current) return;
+      if (!device_id.current) return;
   
       try {
         // Transfer playback
@@ -173,18 +178,7 @@ const SwipeTracksAdd = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            uris: [] // If you want to start with a custom playlist, keep this
-          })
-        });
-
-        await fetch('https://api.spotify.com/v1/me/player/play', {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            uris: trackURIsAll // If you want to start with a custom playlist, keep this
+            uris: trackURIsAllRef.current
           })
         });
   
@@ -198,7 +192,7 @@ const SwipeTracksAdd = () => {
     };
   
     startPlayback();
-  }, [trackURIsAll, device_id.current, token]);
+  }, [trackURIsAllRef.current, device_id.current, token, playlistId]);
 
   const handleNextTrack = () => {
     playerRef.current?.nextTrack();
@@ -214,14 +208,12 @@ const SwipeTracksAdd = () => {
   return (
     <MobileWrapper>
       <div className="relative h-[400px] grid place-items-center">
-        {trackURIs.slice(0, 4).map((uri, index) => (
+        {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
             key={uri}
             index={index}
             total={4}
             trackURI={uri}
-            trackURIs={trackURIs}
-            setTrackURIs={setTrackURIs}
             handleNextTrack={handleNextTrack}
           />
         ))}
