@@ -14,18 +14,19 @@ const emptyTrack = {
   uri: "",
 };
 
-const SwipeTracksAdd = ({playlistName}) => {
+const SwipeTracksAdd = () => {
   const { token } = useToken();
   const { playlistId } = useParams(); 
   const [currentTrack, setCurrentTrack] = useState(emptyTrack);
-
   const [is_paused, setPaused] = useState(false);
   const [is_active, setActive] = useState(false);
   const playerRef = useRef(null); 
   const previousTrackIdRef = useRef(null);
   const device_id = useRef("");
+  const [playlistName, setPlaylistName] = useState("");
+  const [tracksRemoved, setTracksRemoved] = useState([]);
   
-  const [trackURIsAll, setTrackURIsAll] = useState([]);
+
   const trackURIsAllRef = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
   const currentTrackURIRef = useRef("");
@@ -51,10 +52,13 @@ const SwipeTracksAdd = ({playlistName}) => {
 
         const data = await response.json();
         const uris = data.tracks.items
+
           .map(item => item.track?.uri)
           .filter(uri => uri); // Filter out nulls
 
         trackURIsAllRef.current = uris;
+
+        setPlaylistName(data.name);
       } catch (error) {
         console.error("Error fetching playlist data:", error);
       }
@@ -236,6 +240,8 @@ const SwipeTracksAdd = ({playlistName}) => {
 
   return (
     <MobileWrapper>
+      <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
+      <p className="text-center text-gray-500 mb-4">Tracks removed: {tracksRemoved.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
@@ -259,9 +265,9 @@ const SwipeTracksAdd = ({playlistName}) => {
           className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
         >
           {is_paused ? (
-            <PlayIcon className="w-10 h-10" />
+            <PlayIcon className="w-10 h-10 " />
           ) : (
-            <PauseIcon className="w-10 h-10" />
+            <PauseIcon className="w-10 h-10 " />
           )}
         </div>
         <div
