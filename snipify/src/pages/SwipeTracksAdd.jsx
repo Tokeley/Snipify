@@ -24,7 +24,7 @@ const SwipeTracksAdd = () => {
   const previousTrackIdRef = useRef(null);
   const device_id = useRef("");
   const [playlistName, setPlaylistName] = useState("");
-  const [tracksRemoved, setTracksRemoved] = useState([]);
+  const [tracksAdded, setTracksAdded] = useState([]);
   
   const allTracks = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
@@ -209,8 +209,8 @@ const SwipeTracksAdd = () => {
     playerRef.current?.nextTrack();
   }
 
-  const handleRemoveTrack = (trackURI) => {
-    setTracksRemoved((prev) => [...prev, trackURI]);
+  const handleAddTrack = (trackURI) => {
+    setTracksAdded((prev) => [...prev, trackURI]);
   }
 
   const seekBackward15 = async () => {
@@ -255,7 +255,7 @@ const SwipeTracksAdd = () => {
   return (
     <MobileWrapper>
       <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
-      <p className="text-center text-gray-500 mb-6">Tracks removed: {tracksRemoved.length}</p>
+      <p className="text-center text-gray-500 mb-6">Tracks to add: {tracksAdded.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
@@ -264,7 +264,7 @@ const SwipeTracksAdd = () => {
             total={4}
             trackURI={uri}
             handleNextTrack={handleNextTrack}
-            handleRemoveTrack={handleRemoveTrack}
+            handleAddTrack={handleAddTrack}
           />
         ))}
       </div>

@@ -10,7 +10,7 @@ const PlaylistCard = ({ playlist }) => {
 
   return (
     <div className="card card-side bg-base-100 shadow-md mb-4 w-full max-w-md hover:cursor-pointer hover:bg-base-200 transition duration-300 ease-in-out"
-          onClick={() => window.location.href = `/swipe-add/${id}`}
+          onClick={() => window.location.href = `/swipe-remove/${id}`}
     >
       <figure className="w-27 h-27">
         <img src={imageUrl} alt={name} className="object-cover w-full h-full" />

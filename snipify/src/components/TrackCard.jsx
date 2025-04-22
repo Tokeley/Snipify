@@ -4,7 +4,7 @@ import { useToken } from "../contexts/TokenContext.jsx"; // Needed for Spotify A
 
 import { CheckCircleIcon, XCircleIcon } from "../components/Icons.jsx";
 
-const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack }) => {
+const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack, handleAddTrack }) => {
   const { token } = useToken();
   const [trackInfo, setTrackInfo] = useState(null);
   const x = useMotionValue(0);
@@ -36,11 +36,16 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack 
   }, [trackURI, token]);
 
   const handleSwipeRight = () => {
-    console.log("Kept!");
+    if (handleAddTrack) {
+      handleAddTrack(trackURI);
+
+    }
   };
 
   const handleSwipeLeft = () => {
-    handleRemoveTrack(trackURI);
+    if (handleRemoveTrack) {
+      handleRemoveTrack(trackURI);
+    }
   };
 
   const handleDragEnd = () => {
@@ -73,7 +78,7 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack 
       }}
       drag={isFront ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.5}
+      dragElastic={0.7}
       onDragEnd={handleDragEnd}
     >
       <figure className="aspect-square w-full">
@@ -97,7 +102,13 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack 
         className="absolute inset-0 flex flex-col justify-center items-center"
         style={{ opacity: keepOpacity }}
       >
-        <h1 style={{ color: "#008000" }} className="text-3xl font-bold mb-2">Keep!</h1>
+        {
+          handleAddTrack 
+            ? 
+            <h1 style={{ color: "#008000" }} className="text-3xl font-bold mb-2">Add!</h1>
+            :
+            <h1 style={{ color: "#008000" }} className="text-3xl font-bold mb-2">Keep!</h1>
+        }
         <CheckCircleIcon className="w-24 h-24 fill-current" />
       </motion.div>
 
@@ -106,7 +117,13 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack 
         className="absolute inset-0 flex flex-col justify-center items-center"
         style={{ opacity: removeOpacity }}
       >
-        <h1 style={{ color: "#B31B1B" }} className="text-3xl font-bold mb-2">Remove!</h1>
+        {
+          handleAddTrack 
+            ? 
+            <h1 style={{ color: "#B31B1B" }} className="text-3xl font-bold mb-2">Ignore!</h1>
+            :
+            <h1 style={{ color: "#B31B1B" }} className="text-3xl font-bold mb-2">Remove!</h1>
+        }
         <XCircleIcon className="w-24 h-24 fill-current" />
       </motion.div>
 

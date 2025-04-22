@@ -57,7 +57,7 @@ const App = () => {
         <Route path="/confirm-remove" element={<ConfirmRemove />} />
         <Route path="/from-tracks-select" element={<FromTracksSelect />} />
         <Route path="/swipe-add/:playlistId" element={<SwipeTracksAdd />} />
-        <Route path="/swipe-remove" element={<SwipeTracksRemove />} />
+        <Route path="/swipe-remove/:playlistId" element={<SwipeTracksRemove />} />
       </Routes>
     </Router>
   );
