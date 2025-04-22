@@ -26,10 +26,8 @@ const SwipeTracksAdd = () => {
   const [playlistName, setPlaylistName] = useState("");
   const [tracksRemoved, setTracksRemoved] = useState([]);
   
-
-  const trackURIsAllRef = useRef([]);
+  const allTracks = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
-  const currentTrackURIRef = useRef("");
 
   useEffect(() => {
     return () => {
@@ -51,12 +49,17 @@ const SwipeTracksAdd = () => {
         if (!response.ok) throw new Error('Failed to fetch playlist data');
 
         const data = await response.json();
-        const uris = data.tracks.items
 
-          .map(item => item.track?.uri)
-          .filter(uri => uri); // Filter out nulls
+        console.log("Playlist data:", data);
 
-        trackURIsAllRef.current = uris;
+        const tracks = data.tracks.items.map(item => ({
+          uri: item.track?.uri,
+          name: item.track?.name,
+        }));
+  
+        allTracks.current = tracks;
+
+        console.log("All tracks:", allTracks.current);
 
         setPlaylistName(data.name);
       } catch (error) {
@@ -113,17 +116,23 @@ const SwipeTracksAdd = () => {
           setActive(true);
 
 
-            console.log("Current track changed:", current.name);
+            console.log("Current track changed:", current);
+            console.log("Current track ID:", current.external_ids?.isrc);
             setCurrentTrack(current);
-            currentTrackURIRef.current = current.uri;
-            const indexOfCurrentTrack = trackURIsAllRef.current.indexOf(current.uri);
+             // Find the index of the current track by track ID in allTracks (assuming allTracks contains track IDs)
+             const indexOfCurrentTrack = allTracks.current.findIndex(
+              (track) => (track.name === current.name)
+            );
 
             console.log("Index of current track:", indexOfCurrentTrack);
 
-            const upcomingTracks = trackURIsAllRef.current.slice(indexOfCurrentTrack+1, indexOfCurrentTrack + 5);
+            // Get the upcoming tracks (next 4 tracks after the current one)
+            const upcomingTracks = allTracks.current.slice(indexOfCurrentTrack + 1, indexOfCurrentTrack + 5).map(track => track.uri);
             console.log("Upcoming tracks:", upcomingTracks);
             setTrackURIsDisplay(upcomingTracks);
-        
+
+            console.log("Index of current track:", indexOfCurrentTrack);
+
           // Handle seeking
           if (
             current.id &&
@@ -172,6 +181,7 @@ const SwipeTracksAdd = () => {
           })
         });
 
+        const uris = allTracks.current.map(track => track.uri);
         await fetch('https://api.spotify.com/v1/me/player/play', {
           method: 'PUT',
           headers: {
@@ -179,7 +189,7 @@ const SwipeTracksAdd = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            uris: trackURIsAllRef.current
+            uris: uris
           })
         });
   
@@ -193,7 +203,7 @@ const SwipeTracksAdd = () => {
     };
   
     startPlayback();
-  }, [trackURIsAllRef.current, device_id.current, token, playlistId]);
+  }, [allTracks.current, device_id.current, token, playlistId]);
 
   const handleNextTrack = () => {
     playerRef.current?.nextTrack();
