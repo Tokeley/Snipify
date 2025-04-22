@@ -1,40 +1,44 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react';
 import MobileWrapper from '../components/MobileWrapper';
 import { useToken } from '../contexts/TokenContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import PlaylistCard from '../components/PlaylistCard.jsx';
 import Loading from '../pages/Loading.jsx';
 
-
-
 const PlaylistSelect = () => {
   const { token } = useToken();
-
   const [playlists, setPlaylists] = useState([]);
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        const response = await fetch('https://api.spotify.com/v1/me/playlists', {
+  const [page, setPage] = useState(1);
+  const limit = 20; // changed to 20 as per your request
+
+  const fetchPlaylists = async (offset) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=${offset}`,
+        {
           headers: { Authorization: `Bearer ${token}` },
-        });
+        }
+      );
 
-        if (!response.ok) throw new Error('Failed to fetch playlists');
+      if (!response.ok) throw new Error('Failed to fetch playlists');
 
-        const data = await response.json();
-        console.log(data.items);
-        setPlaylists(data.items);
-      } catch (error) {
-        console.error('Error fetching playlists:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const data = await response.json();
+      setPlaylists(data.items);
+    } catch (error) {
+      console.error('Error fetching playlists:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchPlaylists();
-  }, [token]);
+  useEffect(() => {
+    if (token) {
+      const offset = (page - 1) * limit;
+      fetchPlaylists(offset);
+    }
+  }, [token, page]);
 
   if (loading) {
     return <Loading />;
@@ -48,8 +52,24 @@ const PlaylistSelect = () => {
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
       </div>
-    </MobileWrapper>
-  )
-}
 
-export default PlaylistSelect
+      <div className="join my-5 justify-center flex">
+        <button
+          className="join-item btn"
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+        >
+          «
+        </button>
+        <button className="join-item btn cursor-default">Page {page}</button>
+        <button
+          className="join-item btn"
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          »
+        </button>
+      </div>
+    </MobileWrapper>
+  );
+};
+
+export default PlaylistSelect;

@@ -11,8 +11,8 @@ const PlaylistPlayer = () => {
   const [is_active, setActive] = useState(false);
   const playerRef = useRef(null); 
   const previousTrackIdRef = useRef(null);
-    const hasSeekedRef = useRef(false); 
-    const device_id = useRef("");
+  const hasSeekedRef = useRef(false); 
+  const device_id = useRef("");
 
   const [current_track, setTrack] = useState({
     name: "",
@@ -82,7 +82,7 @@ const PlaylistPlayer = () => {
     
         newPlayer.addListener('ready', ({ device_id: receivedDeviceId }) => {
             console.log('Ready with Device ID', receivedDeviceId);
-            device_id.current = receivedDeviceId; // ✅ Correct usage
+            device_id.current = receivedDeviceId;
             setActive(true);
           });
     
@@ -98,9 +98,9 @@ const PlaylistPlayer = () => {
           
             setPaused(state.paused);
             setActive(true);
-            setTrack(current); // still update state for display
+            setTrack(current);
 
-            console.log("Device ID:", device_id.current); // Add this to verify it's populated
+            console.log("Device ID:", device_id.current);
 
             if (
               current.id &&

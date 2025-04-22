@@ -5,6 +5,8 @@ import MobileWrapper from '../components/MobileWrapper';
 import TrackCard from "../components/TrackCard.jsx";
 import Loading from "./Loading.jsx";
 
+import { PlayIcon, PauseIcon, Forward15, Back15 } from "../components/Icons.jsx";
+
 const emptyTrack = {
   name: "",
   album: { images: [{ url: "" }] },
@@ -12,7 +14,7 @@ const emptyTrack = {
   uri: "",
 };
 
-const SwipeTracksAdd = () => {
+const SwipeTracksAdd = ({playlistName}) => {
   const { token } = useToken();
   const { playlistId } = useParams(); 
   const [currentTrack, setCurrentTrack] = useState(emptyTrack);
@@ -21,7 +23,6 @@ const SwipeTracksAdd = () => {
   const [is_active, setActive] = useState(false);
   const playerRef = useRef(null); 
   const previousTrackIdRef = useRef(null);
-  const hasSeekedRef = useRef(false); 
   const device_id = useRef("");
   
   const [trackURIsAll, setTrackURIsAll] = useState([]);
@@ -54,7 +55,6 @@ const SwipeTracksAdd = () => {
           .filter(uri => uri); // Filter out nulls
 
         trackURIsAllRef.current = uris;
-        console.log("Fetched track URIs:", uris);
       } catch (error) {
         console.error("Error fetching playlist data:", error);
       }
@@ -114,8 +114,6 @@ const SwipeTracksAdd = () => {
             currentTrackURIRef.current = current.uri;
             const indexOfCurrentTrack = trackURIsAllRef.current.indexOf(current.uri);
 
-            console.log("Current track URI:", current.uri);
-            console.log("Track URIs All:", trackURIsAllRef.current);
             console.log("Index of current track:", indexOfCurrentTrack);
 
             const upcomingTracks = trackURIsAllRef.current.slice(indexOfCurrentTrack+1, indexOfCurrentTrack + 5);
@@ -129,8 +127,7 @@ const SwipeTracksAdd = () => {
             device_id.current
           ) {
             previousTrackIdRef.current = current.id;
-            hasSeekedRef.current = true;
-        
+      
             try {
               await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=30000&device_id=${device_id.current}`, {
                 method: 'PUT',
@@ -198,6 +195,38 @@ const SwipeTracksAdd = () => {
     playerRef.current?.nextTrack();
   }
 
+  const seekBackward15 = async () => {
+    playerRef.current.getCurrentState().then(state => {
+      if (!state) {
+        console.error('User is not playing music through the Web Playback SDK');
+        return;
+      }
+    
+      var currentPos = state.position;
+
+      if (currentPos != null) {
+        playerRef.current.seek(Math.max(0, currentPos - 15 * 1000));
+        console.log("Seeked back 15 seconds");
+      }
+    });
+  };
+  
+  const seekForward15 = async () => {
+    playerRef.current.getCurrentState().then(state => {
+      if (!state) {
+        console.error('User is not playing music through the Web Playback SDK');
+        return;
+      }
+    
+      var currentPos = state.position;
+
+      if (currentPos != null) {
+        playerRef.current.seek(currentPos + 15 * 1000);
+        console.log("Seeked forward 15 seconds");
+      }
+    });
+  };
+
   if (!is_active) {
     return (
       <Loading/>
@@ -218,10 +247,30 @@ const SwipeTracksAdd = () => {
           />
         ))}
       </div>
-        <div className="flex justify-center items-center mt-4">
-        <button className="btn-spotify" onClick={() => playerRef.current?.togglePlay()}>
-            {is_paused ? "PLAY" : "PAUSE"}
-        </button>
+      <div className="flex justify-center items-center mt-4 space-x-6">
+        <div
+          onClick={() => seekBackward15()} // Seek back 15 seconds
+          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
+        >
+            <Back15 className="w-10 h-10" />
+        </div>
+        <div
+          onClick={() => playerRef.current?.togglePlay()}
+          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
+        >
+          {is_paused ? (
+            <PlayIcon className="w-10 h-10" />
+          ) : (
+            <PauseIcon className="w-10 h-10" />
+          )}
+        </div>
+        <div
+          onClick={() => seekForward15()} // Seek forward 15 seconds
+          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
+        >
+            <Forward15 className="w-10 h-10" />
+        </div>
+
       </div>
     </MobileWrapper>
   )

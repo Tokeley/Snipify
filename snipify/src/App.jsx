@@ -50,7 +50,6 @@ const App = () => {
           element={token ? <Navigate to="/playlist-select" /> : <Navigate to="/login" />} 
         />
 
-        <Route path="/playlist/:playlistId" element={<PlaylistPlayer/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/playlist-select" element={<PlaylistSelect />} />
         <Route path="/add-or-remove" element={<AddOrRemoveSelect />} />
