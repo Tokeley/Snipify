@@ -199,6 +199,10 @@ const SwipeTracksAdd = () => {
     playerRef.current?.nextTrack();
   }
 
+  const handleRemoveTrack = (trackURI) => {
+    setTracksRemoved((prev) => [...prev, trackURI]);
+  }
+
   const seekBackward15 = async () => {
     playerRef.current.getCurrentState().then(state => {
       if (!state) {
@@ -241,7 +245,7 @@ const SwipeTracksAdd = () => {
   return (
     <MobileWrapper>
       <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
-      <p className="text-center text-gray-500 mb-4">Tracks removed: {tracksRemoved.length}</p>
+      <p className="text-center text-gray-500 mb-6">Tracks removed: {tracksRemoved.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
@@ -250,10 +254,11 @@ const SwipeTracksAdd = () => {
             total={4}
             trackURI={uri}
             handleNextTrack={handleNextTrack}
+            handleRemoveTrack={handleRemoveTrack}
           />
         ))}
       </div>
-      <div className="flex justify-center items-center mt-4 space-x-6">
+      <div className="flex justify-center items-center mt-6 space-x-6">
         <div
           onClick={() => seekBackward15()} // Seek back 15 seconds
           className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
