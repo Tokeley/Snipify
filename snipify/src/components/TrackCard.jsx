@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useToken } from "../contexts/TokenContext.jsx"; // Needed for Spotify API auth
 
+import { CheckCircleIcon, XCircleIcon } from "../components/Icons.jsx";
+
 const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack }) => {
   const { token } = useToken();
   const [trackInfo, setTrackInfo] = useState(null);
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-150, 150], [-18, 18]);
-  const opacity = useTransform(x, [-150, 0, 150], [0.5, 1, 0.5]);
-  const keepOpacity = useTransform(x, [0, 100], [0, 1]);
-  const removeOpacity = useTransform(x, [-100, 0], [1, 0]);
+  const opacity = useTransform(x, [-150, 0, 150], [0.7, 1, 0.7]);
+  const keepOpacity = useTransform(x, [0, 50], [0, 1]);
+  const removeOpacity = useTransform(x, [-50, 0], [1, 0]);
   const depth = total - index - 1;
   const isFront = index === 0;
 
@@ -82,27 +84,32 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack 
         />
       </figure>
       <div className="card-body p-4 text-center">
-        <h2 className="card-title text-base font-semibold text-left">{trackInfo.name}</h2>
-        <p className="text-sm text-gray-400 text-left">
+        <h2 className="card-title text-base font-semibold text-left truncate whitespace-nowrap overflow-hidden w-full">
+          {trackInfo.name}
+        </h2>
+        <p className="text-sm text-gray-400 text-left truncate whitespace-nowrap overflow-hidden w-full">
           {trackInfo.artists.map((a) => a.name).join(", ")}
         </p>
       </div>
 
       {/* Keep! Text */}
       <motion.div
-        className="absolute top-6 left-6 text-green-500 text-3xl font-bold"
+        className="absolute inset-0 flex flex-col justify-center items-center"
         style={{ opacity: keepOpacity }}
       >
-        Keep!
+        <h1 style={{ color: "#008000" }} className="text-3xl font-bold mb-2">Keep!</h1>
+        <CheckCircleIcon className="w-24 h-24 fill-current" />
       </motion.div>
 
       {/* Remove! Text */}
       <motion.div
-        className="absolute top-6 right-6 text-red-500 text-3xl font-bold"
+        className="absolute inset-0 flex flex-col justify-center items-center"
         style={{ opacity: removeOpacity }}
       >
-        Remove!
+        <h1 style={{ color: "#B31B1B" }} className="text-3xl font-bold mb-2">Remove!</h1>
+        <XCircleIcon className="w-24 h-24 fill-current" />
       </motion.div>
+
     </motion.div>
   );
 };

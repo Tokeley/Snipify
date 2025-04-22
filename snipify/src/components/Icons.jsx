@@ -2,7 +2,8 @@ import BackIcon from '../assets/back-15-seconds.svg?react';
 import ForwardIcon from '../assets/forward-15-seconds.svg?react';
 import Play from '../assets/play.svg?react';
 import Pause from '../assets/pause.svg?react';
-
+import CheckCircle from '../assets/check-circle.svg?react'
+import XCircle from '../assets/xmark-circle.svg?react';
 
 
 export function Forward15(props) {
@@ -20,3 +21,12 @@ export function PlayIcon(props) {
 export function PauseIcon(props) {
     return <Pause {...props} />;
 }
+
+export function CheckCircleIcon(props) {
+    return <CheckCircle className=" text-green-500 fill-current" {...props} />;
+}
+
+export function XCircleIcon(props) {
+    return <XCircle {...props} />;
+}
+
