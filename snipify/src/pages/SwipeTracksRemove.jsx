@@ -25,9 +25,9 @@ const SwipeTracksRemove = () => {
   const device_id = useRef("");
   const [playlistName, setPlaylistName] = useState("");
   const [tracksRemoved, setTracksRemoved] = useState([]);
-  
   const allTracks = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
+  const [endReached, setEndReached] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -206,7 +206,14 @@ const SwipeTracksRemove = () => {
   }, [allTracks.current, device_id.current, token, playlistId]);
 
   const handleNextTrack = () => {
-    playerRef.current?.nextTrack();
+    if (currentTrack.uri == allTracks.current[allTracks.current.length - 1].uri){
+      setEndReached(true);
+      console.log("End of playlist reached");
+      playerRef.current?.togglePlay();
+    }
+    else {
+      playerRef.current?.nextTrack();
+    }
   }
 
   const handleRemoveTrack = (trackURI) => {
@@ -249,6 +256,18 @@ const SwipeTracksRemove = () => {
     return (
       <Loading/>
     );
+  }
+
+
+
+  if (endReached) {
+    return (
+      <MobileWrapper>
+        <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
+        <p className="text-center text-gray-500 mb-6">No more tracks to remove.</p>
+      </MobileWrapper>
+    );
+
   }
 
 
