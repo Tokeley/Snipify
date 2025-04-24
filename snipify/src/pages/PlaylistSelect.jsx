@@ -47,7 +47,7 @@ const PlaylistSelect = () => {
   return (
     <MobileWrapper>
       <div className="pt-16">
-        <h1 className="text-3xl mb-4 text-center font-semibold">Select Playlist</h1>
+        <h1 className="text-3xl mb-6 text-center font-semibold">Select Playlist</h1>
         {playlists.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}

@@ -4,6 +4,7 @@ import { useToken } from '../contexts/TokenContext.jsx';
 import MobileWrapper from '../components/MobileWrapper';
 import TrackCard from "../components/TrackCard.jsx";
 import Loading from "./Loading.jsx";
+import { useNavigate } from 'react-router-dom'
 
 import { PlayIcon, PauseIcon, Forward15, Back15 } from "../components/Icons.jsx";
 
@@ -16,6 +17,7 @@ const emptyTrack = {
 
 const SwipeTracksRemove = () => {
   const { token } = useToken();
+  const navigate = useNavigate();
   const { playlistId } = useParams(); 
   const [currentTrack, setCurrentTrack] = useState(emptyTrack);
   const [is_paused, setPaused] = useState(false);
@@ -23,7 +25,7 @@ const SwipeTracksRemove = () => {
   const playerRef = useRef(null); 
   const previousTrackIdRef = useRef(null);
   const device_id = useRef("");
-  const [playlistName, setPlaylistName] = useState("");
+  const [playlist, setPlaylist] = useState("");
   const [tracksRemoved, setTracksRemoved] = useState([]);
   const allTracks = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
@@ -61,7 +63,7 @@ const SwipeTracksRemove = () => {
 
         console.log("All tracks:", allTracks.current);
 
-        setPlaylistName(data.name);
+        setPlaylist(data);
       } catch (error) {
         console.error("Error fetching playlist data:", error);
       }
@@ -89,7 +91,7 @@ const SwipeTracksRemove = () => {
         if (playerRef.current) return; // prevent multiple inits!
     
         const newPlayer = new window.Spotify.Player({
-            name: 'Web Playback SDK',
+            name: 'Snipify',
             getOAuthToken: cb => cb(token),
             volume: 0.5
         });
@@ -114,10 +116,6 @@ const SwipeTracksRemove = () => {
         
           setPaused(state.paused);
           setActive(true);
-
-
-            console.log("Current track changed:", current);
-            console.log("Current track ID:", current.external_ids?.isrc);
             setCurrentTrack(current);
              // Find the index of the current track by track ID in allTracks (assuming allTracks contains track IDs)
              const indexOfCurrentTrack = allTracks.current.findIndex(
@@ -252,6 +250,7 @@ const SwipeTracksRemove = () => {
     });
   };
 
+
   if (!is_active) {
     return (
       <Loading/>
@@ -263,8 +262,38 @@ const SwipeTracksRemove = () => {
   if (endReached) {
     return (
       <MobileWrapper>
-        <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
-        <p className="text-center text-gray-500 mb-6">No more tracks to remove.</p>
+        <div
+          className="absolute card w-72"
+        >
+          <div className="card-body p-4 text-center">
+            <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
+            <img
+              src={playlist.images[0]?.url}
+              alt={playlist.name}
+              className="w-full h-full object-cover rounded-lg pointer-events-none select-none shadow-2xl"
+            />
+            <p className="text-center text-gray-500 my-3 text-lg">Tracks to be removed: {tracksRemoved.length}</p>
+            { tracksRemoved.length == 0
+              ? 
+                <button
+                className="btn shadow-2xl flex items-center justify-center"
+                onClick={() => { navigate(`/`) }}
+              >
+                Return Home
+              </button>
+              :
+              <button
+                className="btn btn-wide shadow-2xl"
+                onClick={() =>
+                  navigate('/confirm-remove', { state: { toRemoveUris: tracksRemoved, playlistId: playlistId, playlistName: playlist.name} })
+                }
+              >
+                Confirm tracks to remove
+              </button>
+            }
+          </div>
+        </div>
+
       </MobileWrapper>
     );
 
@@ -273,7 +302,7 @@ const SwipeTracksRemove = () => {
 
   return (
     <MobileWrapper>
-      <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
+      <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
       <p className="text-center text-gray-500 mb-6">Tracks removed: {tracksRemoved.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
