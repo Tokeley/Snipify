@@ -7,8 +7,7 @@
     "client": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "HOST=127.0.0.1 node server",
-    "dev": "run-p server client"
+    "dev": "run-p client"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
