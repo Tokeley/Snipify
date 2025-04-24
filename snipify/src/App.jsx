@@ -23,7 +23,7 @@ const App = () => {
   useEffect(() => {
     async function getToken() {
       try {
-        const response = await fetch('/auth/token');
+        const response = await fetch('https://snipify-production.up.railway.app/auth/token');
         if (!response.ok) throw new Error('Network response was not ok');
         const json = await response.json();
         setToken(json.access_token);
