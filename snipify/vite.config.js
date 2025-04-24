@@ -12,11 +12,11 @@ export default defineConfig({
     svgr(),
   ],
   server: {
-    host: '127.0.0.1',
+    host: 'https://snipifyclient.vercel.app',
     port: 3000,
     proxy: {
       '/auth': {
-        target: 'http://127.0.0.1:5001',
+        target: 'https://snipify-production.up.railway.app',
         changeOrigin: true,
         secure: false,
       },

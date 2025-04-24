@@ -14,12 +14,12 @@ var app = express();
 
 // Enable CORS for the React frontend (allow cross-origin requests)
 app.use(cors({
-  origin: 'http://127.0.0.1:3000',  // Your React frontend URL
+  origin: 'https://snipifyclient.vercel.app',  // Your React frontend URL
   methods: ['GET', 'POST'],         // Allowed methods
 }));
 
 app.listen(port, () => {
-  console.log(`Listening at http://127.0.0.1:${port}`)
+  console.log(`Listening at https://snipify-production.up.railway.app:${port}`)
   console.log('Hello');
 })
 
