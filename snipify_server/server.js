@@ -39,7 +39,7 @@ app.get('/auth/login', (req, res) => {
       response_type: "code",
       client_id: spotify_client_id,
       scope: scope,
-      redirect_uri: "http://127.0.0.1:3000/auth/callback",
+      redirect_uri: "https://snipifyclient.vercel.app/auth/callback",
       state: state
     })
   
@@ -55,7 +55,7 @@ app.get('/auth/callback', (req, res) => {
         url: 'https://accounts.spotify.com/api/token',
         form: {
         code: code,
-        redirect_uri: "http://127.0.0.1:3000/auth/callback",
+        redirect_uri: "https://snipifyclient.vercel.app/auth/callback",
         grant_type: 'authorization_code'
         },
         headers: {
