@@ -8,7 +8,7 @@ const TrackConfirmCard = ({ track, removeFromRemoveList }) => {
   const imageUrl = track.album.images?.[0]?.url || 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp';
 
   return (
-    <div className="card card-side bg-base-100 shadow-md mb-4 w-full max-w-md">
+    <div className="card card-side bg-base-100 shadow-md mb-4 w-full max-w-md sm:w-72 md:w-80 lg:w-96 ">
       <figure className="w-20 h-20">
         <img src={imageUrl} alt={name} className="object-cover w-full h-full" />
       </figure>
