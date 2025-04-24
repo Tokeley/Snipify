@@ -5,7 +5,7 @@ import Playlists from './Playlists.jsx';
 import PlaylistPlayer from './PlaylistPlayer.jsx';
 import './App.css';
 import { useToken } from './contexts/TokenContext.jsx';
-import AddOrRemoveSelect from './pages/AddorRemoveSelect.jsx';
+import AddOrRemoveSelect from './pages/AddOrRemoveSelect.jsx';
 import ConfirmAdd from './pages/ConfirmAdd.jsx';
 import ConfirmRemove from './pages/ConfirmRemove.jsx';
 import FromTracksSelect from './pages/FromTracksSelect.jsx';
