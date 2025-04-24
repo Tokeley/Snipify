@@ -39,7 +39,7 @@ app.get('/auth/login', (req, res) => {
       response_type: "code",
       client_id: spotify_client_id,
       scope: scope,
-      redirect_uri: "https://snipifyclient.vercel.app/auth/callback",
+      redirect_uri: "https://snipify-production.up.railway.app/auth/callback",
       state: state
     })
   
@@ -55,7 +55,7 @@ app.get('/auth/callback', (req, res) => {
         url: 'https://accounts.spotify.com/api/token',
         form: {
         code: code,
-        redirect_uri: "https://snipifyclient.vercel.app/auth/callback",
+        redirect_uri: "https://snipify-production.up.railway.app/auth/callback",
         grant_type: 'authorization_code'
         },
         headers: {
@@ -68,7 +68,7 @@ app.get('/auth/callback', (req, res) => {
     request.post(authOptions, function(error, response, body) {
         if (!error && response.statusCode === 200) {
           access_token = body.access_token;
-          res.redirect('/')
+          res.redirect('https://snipifyclient.vercel.app')
         } else {
           res.status(500).send('Error during authentication');
         }
