@@ -263,7 +263,7 @@ const SwipeTracksRemove = () => {
     return (
       <MobileWrapper>
         <div
-          className="absolute card w-72"
+          className="card w-72"
         >
           <div className="card-body p-4 text-center">
             <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
