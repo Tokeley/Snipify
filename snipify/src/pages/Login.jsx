@@ -5,7 +5,7 @@ const Login = () => {
     return (
         <MobileWrapper>
             <header className="App-header">
-                <a className="btn-spotify" href="/auth/login" >
+                <a className="btn-spotify" href="https://snipify-production.up.railway.app/auth/login" >
                     Login with Spotify 
                 </a>
             </header>
