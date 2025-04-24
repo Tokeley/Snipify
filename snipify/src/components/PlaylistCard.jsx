@@ -9,7 +9,7 @@ const PlaylistCard = ({ playlist }) => {
 
   return (
     <div
-      className="card card-side bg-base-100 shadow-md mb-4 w-full hover:cursor-pointer hover:bg-base-200 transition duration-300 ease-in-out"
+      className="card card-side bg-base-100 shadow-md mb-4 w-full sm:w-72 md:w-80 lg:w-96 hover:cursor-pointer hover:bg-base-200 transition duration-300 ease-in-out"
       onClick={() => window.location.href = `/swipe-remove/${id}`}
     >
       <figure className="w-28 h-28">

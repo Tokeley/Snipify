@@ -48,9 +48,12 @@ const PlaylistSelect = () => {
     <MobileWrapper>
       <div className="pt-16">
         <h1 className="text-3xl mb-6 text-center font-semibold">Select Playlist</h1>
-        {playlists.map((playlist) => (
-          <PlaylistCard key={playlist.id} playlist={playlist} />
-        ))}
+        {/* Wrap Playlist Cards in a Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {playlists.map((playlist) => (
+            <PlaylistCard key={playlist.id} playlist={playlist} />
+          ))}
+        </div>
       </div>
 
       <div className="join my-5 justify-center flex">
