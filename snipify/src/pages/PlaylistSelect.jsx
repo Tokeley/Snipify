@@ -10,7 +10,7 @@ const PlaylistSelect = () => {
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const limit = 21; // changed to 20 as per your request
+  const limit = 21;
 
   const fetchPlaylists = async (offset) => {
     setLoading(true);
