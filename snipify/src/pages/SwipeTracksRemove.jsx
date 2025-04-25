@@ -316,7 +316,7 @@ const SwipeTracksRemove = () => {
           />
         ))}
       </div>
-      <div className="flex justify-center items-center mt-6 space-x-6">
+      <div className="flex justify-center items-center my-6 space-x-6">
         <div
           onClick={() => seekBackward15()} // Seek back 15 seconds
           className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
@@ -339,8 +339,15 @@ const SwipeTracksRemove = () => {
         >
             <Forward15 className="w-10 h-10" />
         </div>
-
       </div>
+      <button
+          className="btn btn-wide shadow-2xl"
+          onClick={() =>
+            navigate('/confirm-remove', { state: { toRemoveUris: tracksRemoved, playlistId: playlistId, playlistName: playlist.name} })
+          }
+        >
+          Confirm tracks to remove
+        </button>
     </MobileWrapper>
   )
 }

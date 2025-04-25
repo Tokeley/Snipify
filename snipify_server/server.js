@@ -14,12 +14,12 @@ var app = express();
 
 // Enable CORS for the React frontend (allow cross-origin requests)
 app.use(cors({
-  origin: 'https://snipifyclient.vercel.app',  // Your React frontend URL
+  origin: `${process.env.CLIENT_URL}`,  // Your React frontend URL
   methods: ['GET', 'POST'],         // Allowed methods
 }));
 
 app.listen(port, () => {
-  console.log(`Listening at https://snipify-production.up.railway.app:${port}`)
+  console.log(`Listening at ${process.env.SERVER_URL}`)
   console.log('Hello');
 })
 
@@ -39,7 +39,7 @@ app.get('/auth/login', (req, res) => {
       response_type: "code",
       client_id: spotify_client_id,
       scope: scope,
-      redirect_uri: "https://snipify-production.up.railway.app/auth/callback",
+      redirect_uri: `${process.env.SERVER_URL}/auth/callback`,
       state: state
     })
   
@@ -55,7 +55,7 @@ app.get('/auth/callback', (req, res) => {
         url: 'https://accounts.spotify.com/api/token',
         form: {
         code: code,
-        redirect_uri: "https://snipify-production.up.railway.app/auth/callback",
+        redirect_uri: `${process.env.SERVER_URL}/auth/callback`,
         grant_type: 'authorization_code'
         },
         headers: {
@@ -68,7 +68,7 @@ app.get('/auth/callback', (req, res) => {
     request.post(authOptions, function(error, response, body) {
         if (!error && response.statusCode === 200) {
           access_token = body.access_token;
-          res.redirect('https://snipifyclient.vercel.app')
+          res.redirect(`${process.env.CLIENT_URL}`)
         } else {
           res.status(500).send('Error during authentication');
         }

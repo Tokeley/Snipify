@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import WebPlayback from './WebPlayback.jsx';
-import Playlists from './Playlists.jsx';
-import PlaylistPlayer from './PlaylistPlayer.jsx';
 import './App.css';
 import { useToken } from './contexts/TokenContext.jsx';
 import AddOrRemoveSelect from './pages/AddOrRemoveSelect.jsx';
@@ -15,7 +12,6 @@ import SwipeTracksAdd from './pages/SwipeTracksAdd.jsx';
 import SwipeTracksRemove from './pages/SwipeTracksRemove.jsx';
 import Loading from './pages/Loading.jsx';
 
-
 const App = () => {
   const { token, setToken } = useToken();
   const [loading, setLoading] = useState(true);
@@ -23,7 +19,7 @@ const App = () => {
   useEffect(() => {
     async function getToken() {
       try {
-        const response = await fetch('https://snipify-production.up.railway.app/auth/token');
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/token`);
         if (!response.ok) throw new Error('Network response was not ok');
         const json = await response.json();
         setToken(json.access_token);
