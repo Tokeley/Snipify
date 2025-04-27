@@ -92,12 +92,12 @@ const ConfirmRemove = () => {
   if (removeSuccess) {  
     return (
       <MobileWrapper>
-        <div className="pt-16 flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <h1 className="text-3xl mb-6 text-center font-semibold">Tracks Removed!</h1>
           <CheckCircleIcon className="w-16 h-16 text-green-500 mb-4" />
           { removeTracks.length == 1 
           ? 
-            <p className="p-4 text-gray-500 text-center">{removeTracks.length} track have been removed from {playlistName}</p> 
+            <p className="p-4 text-gray-500 text-center">{removeTracks.length} track has been removed from {playlistName}</p> 
           : 
             <p className="p-4 text-gray-500 text-center">{removeTracks.length} tracks have been removed from {playlistName}</p>
           }
@@ -114,8 +114,9 @@ const ConfirmRemove = () => {
 
   return (
     <MobileWrapper>
-      <div className="pt-16 flex flex-col items-center">
-        <h1 className="text-3xl mb-6 text-center font-semibold">Confirm tracks to remove</h1>
+      <div className="flex flex-col items-center">
+        <h1 className="text-3xl mb-2 text-center font-semibold">Confirm tracks to remove</h1>
+        <p className="text-center  mb-2 text-gray-500 text-lg">From: {playlistName}</p>
         {removeTracks.length === 0 ? (
           <p className="p-4 text-gray-500 text-center mb-6">No tracks to remove</p>
         ) : (

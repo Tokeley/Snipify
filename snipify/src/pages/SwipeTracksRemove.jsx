@@ -274,7 +274,7 @@ const SwipeTracksRemove = () => {
             />
             <p className="text-center text-gray-500 my-3 text-lg">Tracks to be removed: {tracksRemoved.length}</p>
             { tracksRemoved.length == 0
-              ? 
+              ?  
                 <button
                 className="btn shadow-2xl flex items-center justify-center"
                 onClick={() => { navigate(`/`) }}
