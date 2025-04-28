@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useToken } from "../contexts/TokenContext.jsx"; // Needed for Spotify API auth
-
 import { CheckCircleIcon, XCircleIcon } from "../components/Icons.jsx";
 
 const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack, handleAddTrack }) => {
@@ -35,14 +34,16 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
     fetchTrackInfo();
   }, [trackURI, token]);
 
+  // Handle swipe actions (right and left)
   const handleSwipeRight = () => {
+    handleNextTrack();
     if (handleAddTrack) {
       handleAddTrack(trackURI);
-
     }
   };
 
   const handleSwipeLeft = () => {
+    handleNextTrack();
     if (handleRemoveTrack) {
       handleRemoveTrack(trackURI);
     }
@@ -50,14 +51,32 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
 
   const handleDragEnd = () => {
     if (x.get() > 100) {
-      handleNextTrack();
       handleSwipeRight();
     }
     if (x.get() < -100) {
-      handleNextTrack();
       handleSwipeLeft();
     }
   };
+
+  // Add keyboard listeners to handle arrow key presses
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowRight") {
+        handleSwipeRight();
+      }
+      if (event.key === "ArrowLeft") {
+        handleSwipeLeft();
+      }
+    };
+
+    // Add event listener for keydown
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleSwipeRight, handleSwipeLeft]);
 
   if (!trackInfo) return null;
 
