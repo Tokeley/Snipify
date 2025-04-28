@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useToken } from "../contexts/TokenContext.jsx"; // Needed for Spotify API auth
 import { CheckCircleIcon, XCircleIcon } from "../components/Icons.jsx";
@@ -6,6 +6,9 @@ import { CheckCircleIcon, XCircleIcon } from "../components/Icons.jsx";
 const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack, handleAddTrack }) => {
   const { token } = useToken();
   const [trackInfo, setTrackInfo] = useState(null);
+  const [isLeftArrowHeld, setIsLeftArrowHeld] = useState(false);
+  const [isRightArrowHeld, setIsRightArrowHeld] = useState(false);
+
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-150, 150], [-18, 18]);
   const opacity = useTransform(x, [-150, 0, 150], [0.7, 1, 0.7]);
@@ -34,7 +37,6 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
     fetchTrackInfo();
   }, [trackURI, token]);
 
-  // Handle swipe actions (right and left)
   const handleSwipeRight = () => {
     handleNextTrack();
     if (handleAddTrack) {
@@ -58,25 +60,48 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
     }
   };
 
+  useEffect(() => {
+    setIsLeftArrowHeld(false);
+  }, [index]);
+
   // Add keyboard listeners to handle arrow key presses
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "ArrowRight") {
-        handleSwipeRight();
+        setIsRightArrowHeld(true); // Mark right arrow as held
       }
       if (event.key === "ArrowLeft") {
-        handleSwipeLeft();
+        setIsLeftArrowHeld(true); // Mark left arrow as held
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (event.key === "ArrowRight") {
+        setIsRightArrowHeld(false); // Mark right arrow as released
+        handleSwipeRight(); // Trigger swipe right action
+      }
+      if (event.key === "ArrowLeft") {
+        setIsLeftArrowHeld(false); // Mark left arrow as released
+        handleSwipeLeft(); // Trigger swipe left action
       }
     };
 
     // Add event listener for keydown
     window.addEventListener("keydown", handleKeyDown);
 
+    // Add event listener for keyup
+    window.addEventListener("keyup", handleKeyUp);
+
     // Cleanup event listener
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleSwipeRight, handleSwipeLeft]);
+
+  // Adjust opacity for "Keep" and "Remove" based on whether the keys are held down
+  const keepTextOpacity = isRightArrowHeld ? 1 : keepOpacity;
+  const removeTextOpacity = isLeftArrowHeld ? 1 : removeOpacity;
 
   if (!trackInfo) return null;
 
@@ -119,7 +144,7 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
       {/* Keep! Text */}
       <motion.div
         className="absolute inset-0 flex flex-col justify-center items-center"
-        style={{ opacity: keepOpacity }}
+        style={{ opacity: keepTextOpacity }}
       >
         {
           handleAddTrack 
@@ -134,7 +159,7 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
       {/* Remove! Text */}
       <motion.div
         className="absolute inset-0 flex flex-col justify-center items-center"
-        style={{ opacity: removeOpacity }}
+        style={{ opacity: removeTextOpacity }}
       >
         {
           handleAddTrack 
@@ -151,3 +176,4 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
 };
 
 export default TrackCard;
+
