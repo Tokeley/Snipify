@@ -16,7 +16,7 @@ const PlaylistCard = ({ playlist }) => {
         <img src={imageUrl} alt={name} className="object-cover w-full h-full" />
       </figure>
       <div className="card-body p-4 overflow-hidden">
-        <h2 className="card-title text-base font-semibold leading-tight truncate">{name}</h2>
+        <h2 className="card-title text-base font-semibold leading-tight truncate w-full">{name}</h2>
         <p className="text-sm text-gray-400 truncate">by {owner}</p>
         <p className="text-sm">{totalTracks} tracks</p>
       </div>
