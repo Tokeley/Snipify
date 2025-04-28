@@ -72,7 +72,9 @@ const ConfirmRemove = () => {
   useEffect(() => {
     const fetchAllTracks = async () => {
       setLoading(true)
-      const fetchedTracks = await Promise.all(toRemoveUris.map(getTrack))
+      // remove duplicates
+      const uniqueUris = [...new Set(toRemoveUris)]
+      const fetchedTracks = await Promise.all(uniqueUris.map(getTrack))
       const validTracks = fetchedTracks.filter((track) => track !== null)
       setRemoveTracks(validTracks)
       setLoading(false)
