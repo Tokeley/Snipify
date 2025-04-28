@@ -62,6 +62,7 @@ const TrackCard = ({ trackURI, index, total, handleNextTrack, handleRemoveTrack,
 
   useEffect(() => {
     setIsLeftArrowHeld(false);
+    setIsRightArrowHeld(false);
   }, [index]);
 
   // Add keyboard listeners to handle arrow key presses
