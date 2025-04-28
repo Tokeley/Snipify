@@ -10,6 +10,7 @@ const PlaylistSelect = () => {
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [userDisplayName, setUserDisplayName] = useState(null); // Store user's display name
   const limit = 21;
 
   const fetchPlaylists = async (offset) => {
@@ -25,7 +26,11 @@ const PlaylistSelect = () => {
       if (!response.ok) throw new Error('Failed to fetch playlists');
 
       const data = await response.json();
-      setPlaylists(data.items);
+      // Filter playlists by userDisplayName
+      const filteredPlaylists = data.items.filter(
+        (playlist) => playlist.owner.display_name === userDisplayName
+      );
+      setPlaylists(filteredPlaylists);
     } catch (error) {
       console.error('Error fetching playlists:', error);
     } finally {
@@ -33,12 +38,33 @@ const PlaylistSelect = () => {
     }
   };
 
+  const fetchUserDisplayName = async () => {
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch user data');
+
+      const data = await response.json();
+      setUserDisplayName(data.display_name); // Set the display name of the user
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
   useEffect(() => {
     if (token) {
+      fetchUserDisplayName(); // Fetch the user's display name
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token && userDisplayName) {
       const offset = (page - 1) * limit;
       fetchPlaylists(offset);
     }
-  }, [token, page]);
+  }, [token, userDisplayName, page]);
 
   if (loading) {
     return <Loading />;
