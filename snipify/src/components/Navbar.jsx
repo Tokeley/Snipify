@@ -6,8 +6,8 @@ const Navbar = () => {
     <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50 backdrop-blur-md">
       <div className="navbar-start">
         <div >
-          <div tabIndex={0} role="button" className="btn btn-ghost btn-circle ml-1">
-            <a href="/settings" className="w-5 h-5 flex items-center justify-center">
+          <div href="/settings" tabIndex={0} role="button" className="btn btn-ghost btn-circle ml-1">
+            <a className="w-5 h-5 flex items-center justify-center">
               <GearIcon />
             </a>
           </div>
