@@ -306,7 +306,7 @@ const SwipeTracksRemove = () => {
   return (
     <MobileWrapper>
       <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
-      <p className="text-center text-gray-500 mb-6">Tracks removed: {tracksRemoved.length}</p>
+      <p className="text-center text-gray-500 mb-6">Tracks to remove: {tracksRemoved.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
