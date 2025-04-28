@@ -11,6 +11,7 @@ import PlaylistSelect from './pages/PlaylistSelect.jsx';
 import SwipeTracksAdd from './pages/SwipeTracksAdd.jsx';
 import SwipeTracksRemove from './pages/SwipeTracksRemove.jsx';
 import Loading from './pages/Loading.jsx';
+import Settings from './pages/Settings.jsx';
 
 const App = () => {
   const { token, setToken } = useToken();
@@ -54,6 +55,7 @@ const App = () => {
         <Route path="/from-tracks-select" element={<FromTracksSelect />} />
         <Route path="/swipe-add/:playlistId" element={<SwipeTracksAdd />} />
         <Route path="/swipe-remove/:playlistId" element={<SwipeTracksRemove />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
   );

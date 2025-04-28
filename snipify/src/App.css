@@ -1,3 +1,9 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@layer base {
+    body {
+      @apply text-gray-800;
+    }
+  }
+

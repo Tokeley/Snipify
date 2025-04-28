@@ -6,16 +6,17 @@ const Login = () => {
     console.log("Server url: " + import.meta.env.VITE_SERVER_URL);
     return (
         <MobileWrapper>
-            <div className="text-center mb-6">
-            <div className="text-center mb-6">
-                <h1 className="text-5xl font-bold">
-                    <span className="bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent">
-                        Snip
-                    </span>{' '}
-                    <span className="text-gray-700">
-                        your playlists
-                    </span>
-                </h1>
+            <div className="text-center">
+            <div className="text-center">
+            <h1 className="text-5xl font-bold">
+                <span className="bg-gradient-to-r from-[#00d3bd] to-[#00a6b2] bg-clip-text text-transparent">
+                    Snip
+                </span>{' '}
+                <span className="text-gray-700">
+                    your playlists
+                </span>
+            </h1>
+
                 <h2 className="mt-2 text-5xl text-gray-700">
                     <span className="font-bold">
                         into
@@ -27,8 +28,12 @@ const Login = () => {
                 </h2>
             </div>
             </div>
+
+            <div className="my-3 w-14 h-14">
+                <img src="downarrow.png" alt="Down arrow" className="mx-auto" />
+            </div>
             <a 
-            className="btn bg-white text-gray-700 border-[#e5e5e5] flex items-center justify-center gap-x-2" 
+            className="btn shadow-2xl bg-white text-gray-700 border-[#e5e5e5] flex items-center justify-center gap-x-2" 
             href={`${import.meta.env.VITE_SERVER_URL}/auth/login`}
             >
                 <SpotifyIcon className="w-5 h-5" />

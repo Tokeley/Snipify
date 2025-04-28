@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from 'react-router-dom';
 import { useToken } from '../contexts/TokenContext.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
 import MobileWrapper from '../components/MobileWrapper';
 import TrackCard from "../components/TrackCard.jsx";
 import Loading from "./Loading.jsx";
@@ -17,6 +18,7 @@ const emptyTrack = {
 
 const SwipeTracksRemove = () => {
   const { token } = useToken();
+  const { startTime, skip, volume } = useSettings();
   const navigate = useNavigate();
   const { playlistId } = useParams(); 
   const [currentTrack, setCurrentTrack] = useState(emptyTrack);
@@ -93,7 +95,7 @@ const SwipeTracksRemove = () => {
         const newPlayer = new window.Spotify.Player({
             name: 'Snipify',
             getOAuthToken: cb => cb(token),
-            volume: 0.5
+            volume: volume
         });
     
         playerRef.current = newPlayer;
@@ -138,9 +140,10 @@ const SwipeTracksRemove = () => {
             device_id.current
           ) {
             previousTrackIdRef.current = current.id;
-      
+
+            const startTimeInMs = startTime * 1000; // Convert to milliseconds
             try {
-              await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=30000&device_id=${device_id.current}`, {
+              await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=${startTimeInMs}&device_id=${device_id.current}`, {
                 method: 'PUT',
                 headers: {
                   Authorization: `Bearer ${token}`
@@ -228,7 +231,7 @@ const SwipeTracksRemove = () => {
       var currentPos = state.position;
 
       if (currentPos != null) {
-        playerRef.current.seek(Math.max(0, currentPos - 15 * 1000));
+        playerRef.current.seek(Math.max(0, currentPos - skip * 1000));
         console.log("Seeked back 15 seconds");
       }
     });
@@ -244,7 +247,7 @@ const SwipeTracksRemove = () => {
       var currentPos = state.position;
 
       if (currentPos != null) {
-        playerRef.current.seek(currentPos + 15 * 1000);
+        playerRef.current.seek(currentPos + skip * 1000);
         console.log("Seeked forward 15 seconds");
       }
     });
@@ -317,28 +320,36 @@ const SwipeTracksRemove = () => {
         ))}
       </div>
       <div className="flex justify-center items-center my-6 space-x-6">
-        <div
-          onClick={() => seekBackward15()} // Seek back 15 seconds
-          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
-        >
-            <Back15 className="w-10 h-10" />
-        </div>
-        <div
-          onClick={() => playerRef.current?.togglePlay()}
-          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
-        >
-          {is_paused ? (
-            <PlayIcon className="w-10 h-10 " />
-          ) : (
-            <PauseIcon className="w-10 h-10 " />
-          )}
-        </div>
-        <div
-          onClick={() => seekForward15()} // Seek forward 15 seconds
-          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
-        >
-            <Forward15 className="w-10 h-10" />
-        </div>
+      <div
+        onClick={() => seekBackward15()}
+        className="relative hover:cursor-pointer transition-transform duration-150 active:scale-90"
+      >
+        <Back15 className="w-10 h-10" />
+        <span className="mt-1 absolute inset-0 flex items-center justify-center text-sm font-bold  pointer-events-none">
+          {skip}
+        </span>
+      </div>
+
+      <div
+        onClick={() => playerRef.current?.togglePlay()}
+        className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
+      >
+        {is_paused ? (
+          <PlayIcon className="w-10 h-10" />
+        ) : (
+          <PauseIcon className="w-10 h-10" />
+        )}
+      </div>
+
+      <div
+        onClick={() => seekForward15()}
+        className="relative hover:cursor-pointer transition-transform duration-150 active:scale-90"
+      >
+        <Forward15 className="w-10 h-10" />
+        <span className="mt-1 absolute inset-0 flex items-center justify-center text-sm font-bold  pointer-events-none">
+          {skip}
+        </span>
+      </div>
       </div>
       <button
           className="btn btn-wide shadow-2xl"
