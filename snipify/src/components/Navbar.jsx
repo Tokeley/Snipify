@@ -8,7 +8,7 @@ const Navbar = () => {
         <div >
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle ml-1">
             <a href="/settings" className="w-5 h-5 flex items-center justify-center">
-              <GearIcon className="" />
+              <GearIcon />
             </a>
           </div>
         </div>
