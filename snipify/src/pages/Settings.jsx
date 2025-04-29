@@ -23,14 +23,23 @@ const Settings = () => {
     setVolume(e.target.value / 100);
   };
 
-  // Log out handler
-  const handleLogout = () => {
-    // Remove the token from localStorage
+ // Log out handler
+const handleLogout = async () => {
+  try {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, {
+      method: 'GET',
+      credentials: 'include', // Important to include cookies (session id)
+    });
+  } catch (error) {
+    console.error('Logout failed:', error);
+  } finally {
+    // Clear token on client side no matter what
     localStorage.removeItem('token');
-    // Reset token in context
     setToken('');
     window.location.href = '/login'; // Redirect to login page
-  };
+  }
+};
+
 
   return (
     <MobileWrapper>

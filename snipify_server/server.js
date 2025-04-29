@@ -109,6 +109,24 @@ app.get('/auth/token', (req, res) => {
   }
 });
 
+// Logout route
+app.get('/auth/logout', (req, res) => {
+  console.log('Logout');
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Error logging out');
+    }
+    res.clearCookie('connect.sid', {
+      path: '/',
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
+    res.status(200).send('Logged out successfully');
+  });
+});
+
+
 // Helper function to generate random string for state
 var generateRandomString = function (length) {
     var text = '';
