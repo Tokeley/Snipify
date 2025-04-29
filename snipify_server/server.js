@@ -30,7 +30,10 @@ app.use(session({
     mongoUrl: process.env.MONGO_URL, // your MongoDB connection string
     collectionName: 'sessions',      // optional: name of collection to store sessions
   }),
-  cookie: { secure: true }  // set secure: true when using HTTPS
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // <- Secure only in prod
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Important for cross-site cookies
+  }
 }));
 
 app.listen(port, () => {
