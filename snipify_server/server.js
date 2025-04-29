@@ -2,27 +2,43 @@ import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
 import request from 'request';
+import session from 'express-session';
+import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
 
-const port = 5001
+const port = 5001;
+config();
 
-config()
+const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
+const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+const mongoURL = process.env.MONGO_URL; // MongoDB connection string
 
-var spotify_client_id = process.env.SPOTIFY_CLIENT_ID
-var spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET
-
-var app = express();
+const app = express();
 
 // Enable CORS for the React frontend (allow cross-origin requests)
 app.use(cors({
   origin: `${process.env.CLIENT_URL}`,  // Your React frontend URL
-  methods: ['GET', 'POST'],         // Allowed methods
+  methods: ['GET', 'POST'],   
+  credentials: true,      
+}));
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your_secret_key',
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URL, // your MongoDB connection string
+    collectionName: 'sessions',      // optional: name of collection to store sessions
+  }),
+  cookie: { secure: false }  // set secure: true when using HTTPS
 }));
 
 app.listen(port, () => {
-  console.log(`Listening at ${process.env.SERVER_URL}`)
+  console.log(`Listening at ${process.env.SERVER_URL}`);
   console.log('Hello');
-})
+});
 
+// Auth login route
 app.get('/auth/login', (req, res) => {
     console.log('Login');
     var scope = "streaming \
@@ -31,7 +47,7 @@ app.get('/auth/login', (req, res) => {
                  playlist-read-private \
                  playlist-read-collaborative\
                  playlist-modify-public\
-                 playlist-modify-private"
+                 playlist-modify-private";
   
     var state = generateRandomString(16);
   
@@ -41,13 +57,12 @@ app.get('/auth/login', (req, res) => {
       scope: scope,
       redirect_uri: `${process.env.SERVER_URL}/auth/callback`,
       state: state
-    })
+    });
   
     res.redirect('https://accounts.spotify.com/authorize/?' + auth_query_parameters.toString());
-})
+});
 
-let access_token = '';
-
+// Auth callback route
 app.get('/auth/callback', (req, res) => {
     console.log('Callback');
     var code = req.query.code;
@@ -67,19 +82,23 @@ app.get('/auth/callback', (req, res) => {
 
     request.post(authOptions, function(error, response, body) {
         if (!error && response.statusCode === 200) {
-          access_token = body.access_token;
-          res.redirect(`${process.env.CLIENT_URL}`)
+          // Store the access token in the session
+          req.session.access_token = body.access_token;
+          console.log("Session token after login: " + req.session.access_token);
+          res.redirect(`${process.env.CLIENT_URL}`);
         } else {
           res.status(500).send('Error during authentication');
         }
     });
-})
-  
+});
+
+// Route to get access token from session
 app.get('/auth/token', (req, res) => {
   console.log('Get token');
-  if (access_token) {
+  console.log("Session token: " + req.session.access_token);
+  if (req.session.access_token) {
       res.json({
-          access_token: access_token
+          access_token: req.session.access_token
       });
   } else {
       console.log('No access token available');
@@ -87,14 +106,13 @@ app.get('/auth/token', (req, res) => {
   }
 });
 
-
+// Helper function to generate random string for state
 var generateRandomString = function (length) {
     var text = '';
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  
+
     for (var i = 0; i < length; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
-  };
-  
+};
