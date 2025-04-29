@@ -34,7 +34,7 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    domain: process.env.NODE_ENV === 'production' ? '.up.railway.app' : undefined, // <-- ADD THIS
+    domain: process.env.NODE_ENV === 'production' ? 'snipify-production.up.railway.app' : undefined, // <-- ADD THIS
   }
 }));
 
