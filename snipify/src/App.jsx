@@ -19,23 +19,19 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function getToken() {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/token`, {
-          credentials: 'include',  // <- VERY IMPORTANT
-        })
-        if (!response.ok) throw new Error('Network response was not ok');
-        const json = await response.json();
-        setToken(json.access_token);
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      } finally {
-        setLoading(false);
-      }
+    const hash = window.location.hash;
+    const params = new URLSearchParams(hash.substring(1)); // skip the #
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token'); // optional if needed
+  
+    if (access_token) {
+      setToken(access_token);
+      window.history.replaceState(null, '', window.location.pathname); // Clean up the URL
     }
-
-    getToken();
+  
+    setLoading(false);
   }, [setToken]);
+  
 
   if (loading) {
     return <Loading />;
