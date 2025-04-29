@@ -90,7 +90,7 @@ app.get('/auth/callback', (req, res) => {
         if (!error && response.statusCode === 200) {
           // Store the access token in the session
           req.session.access_token = body.access_token;
-          console.log("Session token after login: " + req.session.access_token);
+          console.log("Session after login: ", req.session);
           res.redirect(`${process.env.CLIENT_URL}`);
         } else {
           res.status(500).send('Error during authentication');
@@ -101,8 +101,6 @@ app.get('/auth/callback', (req, res) => {
 // Route to get access token from session
 app.get('/auth/token', (req, res) => {
   console.log('Get token');
-  console.log('Session from get token:', req.session);
-  console.log("Session token: " + req.session.access_token);
   if (req.session.access_token) {
       res.json({
           access_token: req.session.access_token
@@ -116,6 +114,7 @@ app.get('/auth/token', (req, res) => {
 // Logout route
 app.get('/auth/logout', (req, res) => {
   console.log('Logout');
+  req.session.access_token = null; // Clear the access token from the session
   req.session.destroy((err) => {
     if (err) {
       console.error('Error destroying session:', err);
