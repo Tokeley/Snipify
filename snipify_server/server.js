@@ -14,6 +14,7 @@ const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const mongoURL = process.env.MONGO_URL; // MongoDB connection string
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Enable CORS for the React frontend (allow cross-origin requests)
 app.use(cors({
