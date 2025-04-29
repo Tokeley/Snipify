@@ -25,19 +25,9 @@ const Settings = () => {
 
  // Log out handler
 const handleLogout = async () => {
-  try {
-    await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, {
-      method: 'GET',
-      credentials: 'include', // Important to include cookies (session id)
-    });
-  } catch (error) {
-    console.error('Logout failed:', error);
-  } finally {
     // Clear token on client side no matter what
-    localStorage.removeItem('token');
     setToken('');
     window.location.href = '/login'; // Redirect to login page
-  }
 };
 
 
