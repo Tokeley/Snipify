@@ -30,7 +30,7 @@ app.use(session({
     mongoUrl: process.env.MONGO_URL, // your MongoDB connection string
     collectionName: 'sessions',      // optional: name of collection to store sessions
   }),
-  cookie: { secure: false }  // set secure: true when using HTTPS
+  cookie: { secure: true }  // set secure: true when using HTTPS
 }));
 
 app.listen(port, () => {
