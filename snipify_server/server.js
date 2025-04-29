@@ -69,6 +69,7 @@ app.get('/auth/login', (req, res) => {
 // Auth callback route
 app.get('/auth/callback', (req, res) => {
     console.log('Callback');
+    console.log('Session from callback:', req.session);
     var code = req.query.code;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
@@ -99,7 +100,7 @@ app.get('/auth/callback', (req, res) => {
 // Route to get access token from session
 app.get('/auth/token', (req, res) => {
   console.log('Get token');
-  console.log('Session:', req.session);
+  console.log('Session from get token:', req.session);
   console.log("Session token: " + req.session.access_token);
   if (req.session.access_token) {
       res.json({
