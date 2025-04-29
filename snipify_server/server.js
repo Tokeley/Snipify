@@ -27,12 +27,13 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URL, // your MongoDB connection string
-    collectionName: 'sessions',      // optional: name of collection to store sessions
+    mongoUrl: mongoURL,
+    collectionName: 'sessions',
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // <- Secure only in prod
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Important for cross-site cookies
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    domain: process.env.NODE_ENV === 'production' ? '.up.railway.app' : undefined, // <-- ADD THIS
   }
 }));
 
