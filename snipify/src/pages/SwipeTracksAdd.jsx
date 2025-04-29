@@ -50,8 +50,6 @@ const SwipeTracksAdd = () => {
 
         const data = await response.json();
 
-        console.log("Playlist data:", data);
-
         const tracks = data.tracks.items.map(item => ({
           uri: item.track?.uri,
           name: item.track?.name,
