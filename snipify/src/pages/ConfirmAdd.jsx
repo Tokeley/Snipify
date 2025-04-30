@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Loading from './Loading'
 import { useToken } from '../contexts/TokenContext.jsx';
 import TrackConfirmCard from '../components/TrackConfirmCard'
-import { TrashIcon, CheckCircleIcon } from '../components/Icons.jsx';
+import { PlusIcon, CheckCircleIcon } from '../components/Icons.jsx';
 
 const ConfirmAdd = () => {
   const { token } = useToken();
@@ -132,6 +132,7 @@ const ConfirmAdd = () => {
             onClick={addTracksToPlaylist}
           >
             Add Tracks
+            <PlusIcon className="w-5 h-5 ml-2" />
           </button>
         )}
       </div>
