@@ -52,7 +52,7 @@ const ConfirmToAndFromForAdd = () => {
   }, [token, fromCollectionType, fromCollectionId, playlistId]);
 
   const handleConfirm = () => {
-    navigate('/swipe-add/' + playlistId , { state: { fromCollectionType: fromCollectionType, fromCollectionId: fromCollectionId} })
+    navigate('/swipe-add/' + playlistId , { state: { fromCollectionType: fromCollectionType, fromCollectionId: fromCollectionId, toPlaylistName: toDetails.name} })
   }
 
   if (loading || !fromDetails || !toDetails) return <Loading />;

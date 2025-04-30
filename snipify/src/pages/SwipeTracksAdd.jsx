@@ -28,7 +28,7 @@ const SwipeTracksAdd = () => {
   const previousTrackIdRef = useRef(null);
   const device_id = useRef("");
   const [playlist, setPlaylist] = useState("");
-  const [tracksRemoved, setTracksRemoved] = useState([]);
+  const [tracksToAdd, setTracksToAdd] = useState([]);
   const allTracks = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
   const [endReached, setEndReached] = useState(false);
@@ -37,6 +37,7 @@ const SwipeTracksAdd = () => {
   const { playlistId } = useParams(); 
   const fromCollectionType = state?.fromCollectionType || null
   const fromCollectionId = state?.fromCollectionId || null
+  const toPlaylistName = state?.toPlaylistName || null
 
   useEffect(() => {
     return () => {
@@ -237,8 +238,8 @@ const SwipeTracksAdd = () => {
     }
   }
 
-  const handleRemoveTrack = (trackURI) => {
-    setTracksRemoved((prev) => [...prev, trackURI]);
+  const handleAddTrack = (trackURI) => {
+    setTracksToAdd((prev) => [...prev, trackURI]);
   }
 
   const seekBackward15 = async () => {
@@ -295,8 +296,9 @@ const SwipeTracksAdd = () => {
               alt={playlist.name}
               className="w-full h-full object-cover rounded-lg pointer-events-none select-none shadow-2xl"
             />
-            <p className="text-center text-gray-500 my-3 text-lg">Tracks to be removed: {tracksRemoved.length}</p>
-            { tracksRemoved.length == 0
+            <p className="text-center text-gray-500 my-3 text-lg">{tracksToAdd.length} tracks to be added to:</p>
+            <h2 className="text-xl font-semibold text-center mb-2">{toPlaylistName}</h2>
+            { tracksToAdd.length == 0
               ?  
                 <button
                 className="btn shadow-2xl flex items-center justify-center"
@@ -308,10 +310,10 @@ const SwipeTracksAdd = () => {
               <button
                 className="btn btn-wide shadow-2xl"
                 onClick={() =>
-                  navigate('/confirm-remove', { state: { toRemoveUris: tracksRemoved, playlistId: playlistId, playlistName: playlist.name} })
+                  navigate('/confirm-add', { state: { toAddUris: tracksToAdd, playlistId: playlistId, playlistName: toPlaylistName} })
                 }
               >
-                Confirm tracks to remove
+                Confirm tracks to add
               </button>
             }
           </div>
@@ -326,7 +328,7 @@ const SwipeTracksAdd = () => {
   return (
     <MobileWrapper>
       <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
-      <p className="text-center text-gray-500 mb-6">Tracks to remove: {tracksRemoved.length}</p>
+      <p className="text-center text-gray-500 mb-6">Tracks to be added to {toPlaylistName}: {tracksToAdd.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
@@ -335,7 +337,7 @@ const SwipeTracksAdd = () => {
             total={4}
             trackURI={uri}
             handleNextTrack={handleNextTrack}
-            handleRemoveTrack={handleRemoveTrack}
+            handleAddTrack={handleAddTrack}
           />
         ))}
       </div>
@@ -374,10 +376,10 @@ const SwipeTracksAdd = () => {
       <button
           className="btn btn-wide shadow-2xl"
           onClick={() =>
-            navigate('/confirm-remove', { state: { toRemoveUris: tracksRemoved, playlistId: playlistId, playlistName: playlist.name} })
+            navigate('/confirm-add', { state: { toAddUris: tracksToAdd, playlistId: playlistId, playlistName: toPlaylistName} })
           }
         >
-          Confirm tracks to remove
+          Confirm tracks to add
         </button>
     </MobileWrapper>
   )
