@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useToken } from '../contexts/TokenContext.jsx';
+import { useSettings } from '../contexts/SettingsContext.jsx';
 import MobileWrapper from '../components/MobileWrapper';
 import TrackCard from "../components/TrackCard.jsx";
 import Loading from "./Loading.jsx";
+import { useNavigate } from 'react-router-dom'
 
 import { PlayIcon, PauseIcon, Forward15, Back15 } from "../components/Icons.jsx";
 
@@ -16,6 +18,8 @@ const emptyTrack = {
 
 const SwipeTracksAdd = () => {
   const { token } = useToken();
+  const { startTime, skip, volume } = useSettings();
+  const navigate = useNavigate();
   const { playlistId } = useParams(); 
   const [currentTrack, setCurrentTrack] = useState(emptyTrack);
   const [is_paused, setPaused] = useState(false);
@@ -23,11 +27,15 @@ const SwipeTracksAdd = () => {
   const playerRef = useRef(null); 
   const previousTrackIdRef = useRef(null);
   const device_id = useRef("");
-  const [playlistName, setPlaylistName] = useState("");
-  const [tracksAdded, setTracksAdded] = useState([]);
-  
+  const [playlist, setPlaylist] = useState("");
+  const [tracksRemoved, setTracksRemoved] = useState([]);
   const allTracks = useRef([]);
   const [trackURIsDisplay, setTrackURIsDisplay] = useState([]);
+  const [endReached, setEndReached] = useState(false);
+  const { state } = useLocation()
+
+  const fromCollectionType = state?.fromCollectionType || null
+    const fromCollectionId = state?.fromCollectionId || null
 
   useEffect(() => {
     return () => {
@@ -50,6 +58,8 @@ const SwipeTracksAdd = () => {
 
         const data = await response.json();
 
+        console.log("Playlist data:", data);
+
         const tracks = data.tracks.items.map(item => ({
           uri: item.track?.uri,
           name: item.track?.name,
@@ -59,7 +69,7 @@ const SwipeTracksAdd = () => {
 
         console.log("All tracks:", allTracks.current);
 
-        setPlaylistName(data.name);
+        setPlaylist(data);
       } catch (error) {
         console.error("Error fetching playlist data:", error);
       }
@@ -87,9 +97,9 @@ const SwipeTracksAdd = () => {
         if (playerRef.current) return; // prevent multiple inits!
     
         const newPlayer = new window.Spotify.Player({
-            name: 'Web Playback SDK',
+            name: 'Snipify',
             getOAuthToken: cb => cb(token),
-            volume: 0.5
+            volume: volume
         });
     
         playerRef.current = newPlayer;
@@ -112,10 +122,6 @@ const SwipeTracksAdd = () => {
         
           setPaused(state.paused);
           setActive(true);
-
-
-            console.log("Current track changed:", current);
-            console.log("Current track ID:", current.external_ids?.isrc);
             setCurrentTrack(current);
              // Find the index of the current track by track ID in allTracks (assuming allTracks contains track IDs)
              const indexOfCurrentTrack = allTracks.current.findIndex(
@@ -138,9 +144,10 @@ const SwipeTracksAdd = () => {
             device_id.current
           ) {
             previousTrackIdRef.current = current.id;
-      
+
+            const startTimeInMs = startTime * 1000; // Convert to milliseconds
             try {
-              await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=30000&device_id=${device_id.current}`, {
+              await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=${startTimeInMs}&device_id=${device_id.current}`, {
                 method: 'PUT',
                 headers: {
                   Authorization: `Bearer ${token}`
@@ -204,11 +211,18 @@ const SwipeTracksAdd = () => {
   }, [allTracks.current, device_id.current, token, playlistId]);
 
   const handleNextTrack = () => {
-    playerRef.current?.nextTrack();
+    if (currentTrack.uri == allTracks.current[allTracks.current.length - 1].uri){
+      setEndReached(true);
+      console.log("End of playlist reached");
+      playerRef.current?.togglePlay();
+    }
+    else {
+      playerRef.current?.nextTrack();
+    }
   }
 
-  const handleAddTrack = (trackURI) => {
-    setTracksAdded((prev) => [...prev, trackURI]);
+  const handleRemoveTrack = (trackURI) => {
+    setTracksRemoved((prev) => [...prev, trackURI]);
   }
 
   const seekBackward15 = async () => {
@@ -221,7 +235,7 @@ const SwipeTracksAdd = () => {
       var currentPos = state.position;
 
       if (currentPos != null) {
-        playerRef.current.seek(Math.max(0, currentPos - 15 * 1000));
+        playerRef.current.seek(Math.max(0, currentPos - skip * 1000));
         console.log("Seeked back 15 seconds");
       }
     });
@@ -237,11 +251,12 @@ const SwipeTracksAdd = () => {
       var currentPos = state.position;
 
       if (currentPos != null) {
-        playerRef.current.seek(currentPos + 15 * 1000);
+        playerRef.current.seek(currentPos + skip * 1000);
         console.log("Seeked forward 15 seconds");
       }
     });
   };
+
 
   if (!is_active) {
     return (
@@ -250,10 +265,52 @@ const SwipeTracksAdd = () => {
   }
 
 
+
+  if (endReached) {
+    return (
+      <MobileWrapper>
+        <div
+          className="card w-72"
+        >
+          <div className="card-body p-4 text-center">
+            <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
+            <img
+              src={playlist.images[0]?.url}
+              alt={playlist.name}
+              className="w-full h-full object-cover rounded-lg pointer-events-none select-none shadow-2xl"
+            />
+            <p className="text-center text-gray-500 my-3 text-lg">Tracks to be removed: {tracksRemoved.length}</p>
+            { tracksRemoved.length == 0
+              ?  
+                <button
+                className="btn shadow-2xl flex items-center justify-center"
+                onClick={() => { navigate(`/`) }}
+              >
+                Return Home
+              </button>
+              :
+              <button
+                className="btn btn-wide shadow-2xl"
+                onClick={() =>
+                  navigate('/confirm-remove', { state: { toRemoveUris: tracksRemoved, playlistId: playlistId, playlistName: playlist.name} })
+                }
+              >
+                Confirm tracks to remove
+              </button>
+            }
+          </div>
+        </div>
+
+      </MobileWrapper>
+    );
+
+  }
+
+
   return (
     <MobileWrapper>
-      <h2 className="text-xl font-semibold text-center mb-2">{playlistName}</h2>
-      <p className="text-center text-gray-500 mb-6">Tracks to add: {tracksAdded.length}</p>
+      <h2 className="text-xl font-semibold text-center mb-2">{playlist.name}</h2>
+      <p className="text-center text-gray-500 mb-6">Tracks to remove: {tracksRemoved.length}</p>
       <div className="relative h-[400px] grid place-items-center">
         {[currentTrack.uri, ...trackURIsDisplay].map((uri, index) => (
           <TrackCard
@@ -262,35 +319,50 @@ const SwipeTracksAdd = () => {
             total={4}
             trackURI={uri}
             handleNextTrack={handleNextTrack}
-            handleAddTrack={handleAddTrack}
+            handleRemoveTrack={handleRemoveTrack}
           />
         ))}
       </div>
-      <div className="flex justify-center items-center mt-6 space-x-6">
-        <div
-          onClick={() => seekBackward15()} // Seek back 15 seconds
-          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
-        >
-            <Back15 className="w-10 h-10" />
-        </div>
-        <div
-          onClick={() => playerRef.current?.togglePlay()}
-          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
-        >
-          {is_paused ? (
-            <PlayIcon className="w-10 h-10 " />
-          ) : (
-            <PauseIcon className="w-10 h-10 " />
-          )}
-        </div>
-        <div
-          onClick={() => seekForward15()} // Seek forward 15 seconds
-          className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
-        >
-            <Forward15 className="w-10 h-10" />
-        </div>
-
+      <div className="flex justify-center items-center my-6 space-x-6">
+      <div
+        onClick={() => seekBackward15()}
+        className="relative hover:cursor-pointer transition-transform duration-150 active:scale-90"
+      >
+        <Back15 className="w-10 h-10" />
+        <span className="mt-1 absolute inset-0 flex items-center justify-center text-sm font-bold  pointer-events-none">
+          {skip}
+        </span>
       </div>
+
+      <div
+        onClick={() => playerRef.current?.togglePlay()}
+        className="hover:cursor-pointer transition-transform duration-150 active:scale-90"
+      >
+        {is_paused ? (
+          <PlayIcon className="w-10 h-10" />
+        ) : (
+          <PauseIcon className="w-10 h-10" />
+        )}
+      </div>
+
+      <div
+        onClick={() => seekForward15()}
+        className="relative hover:cursor-pointer transition-transform duration-150 active:scale-90"
+      >
+        <Forward15 className="w-10 h-10" />
+        <span className="mt-1 absolute inset-0 flex items-center justify-center text-sm font-bold  pointer-events-none">
+          {skip}
+        </span>
+      </div>
+      </div>
+      <button
+          className="btn btn-wide shadow-2xl"
+          onClick={() =>
+            navigate('/confirm-remove', { state: { toRemoveUris: tracksRemoved, playlistId: playlistId, playlistName: playlist.name} })
+          }
+        >
+          Confirm tracks to remove
+        </button>
     </MobileWrapper>
   )
 }

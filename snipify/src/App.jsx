@@ -7,12 +7,14 @@ import ConfirmAdd from './pages/ConfirmAdd.jsx';
 import ConfirmRemove from './pages/ConfirmRemove.jsx';
 import FromTracksSelect from './pages/FromTracksSelect.jsx';
 import Login from './pages/Login.jsx';
-import PlaylistSelect from './pages/PlaylistSelect.jsx';
+import PlaylistSelect from './pages/PlaylistSelectOut.jsx';
 import SwipeTracksAdd from './pages/SwipeTracksAdd.jsx';
 import SwipeTracksRemove from './pages/SwipeTracksRemove.jsx';
 import Loading from './pages/Loading.jsx';
 import Settings from './pages/Settings.jsx';
 import FromPlaylistOrAlbumSelect from './pages/FromPlaylistOrAlbumSelect.jsx';
+import PlaylistSelectIn from './pages/PlaylistSelectIn.jsx';
+import ConfirmToAndFromForAdd from './pages/ConfirmToAndFromForAdd.jsx';
 
 const App = () => {
   const { token, setToken } = useToken();
@@ -48,6 +50,7 @@ const App = () => {
 
         <Route path="/login" element={<Login />} />
         <Route path="/playlist-select" element={<PlaylistSelect />} />
+        <Route path="/playlist-select-in" element={<PlaylistSelectIn />} />
         <Route path="/add-or-remove" element={<AddOrRemoveSelect />} />
         <Route path="/confirm-add" element={<ConfirmAdd />} />
         <Route path="/confirm-remove" element={<ConfirmRemove />} />
@@ -56,6 +59,7 @@ const App = () => {
         <Route path="/swipe-remove/:playlistId" element={<SwipeTracksRemove />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/from-playlist-or-album-select" element={<FromPlaylistOrAlbumSelect />} />
+        <Route path="/confirm-to-and-from-for-add" element={<ConfirmToAndFromForAdd />} />
         
         {/* Fallback route */}
       </Routes>
