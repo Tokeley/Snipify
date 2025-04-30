@@ -20,7 +20,7 @@ const SwipeTracksAdd = () => {
   const { token } = useToken();
   const { startTime, skip, volume } = useSettings();
   const navigate = useNavigate();
-  const { playlistId } = useParams(); 
+
   const [currentTrack, setCurrentTrack] = useState(emptyTrack);
   const [is_paused, setPaused] = useState(false);
   const [is_active, setActive] = useState(false);
@@ -34,8 +34,9 @@ const SwipeTracksAdd = () => {
   const [endReached, setEndReached] = useState(false);
   const { state } = useLocation()
 
+  const { playlistId } = useParams(); 
   const fromCollectionType = state?.fromCollectionType || null
-    const fromCollectionId = state?.fromCollectionId || null
+  const fromCollectionId = state?.fromCollectionId || null
 
   useEffect(() => {
     return () => {
@@ -46,37 +47,52 @@ const SwipeTracksAdd = () => {
     };
   }, []);
 
-  // Fetch playlist data and extract track URIs
+  // Fetch track data and extract track URIs
   useEffect(() => {
-    const fetchPlaylistTracks = async () => {
+    const fetchCollectionTracks = async () => {
       try {
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch playlist data');
-
-        const data = await response.json();
-
-        console.log("Playlist data:", data);
-
-        const tracks = data.tracks.items.map(item => ({
-          uri: item.track?.uri,
-          name: item.track?.name,
-        }));
+        const headers = { Authorization: `Bearer ${token}` };
+        let response, data;
   
-        allTracks.current = tracks;
-
-        console.log("All tracks:", allTracks.current);
-
-        setPlaylist(data);
+        if (fromCollectionType === "playlist") {
+          response = await fetch(`https://api.spotify.com/v1/playlists/${fromCollectionId}`, { headers });
+          if (!response.ok) throw new Error("Failed to fetch playlist data");
+          data = await response.json();
+  
+          const tracks = data.tracks.items.map(item => ({
+            uri: item.track?.uri,
+            name: item.track?.name,
+          }));
+  
+          allTracks.current = tracks;
+          setPlaylist(data);
+  
+        } else if (fromCollectionType === "album") {
+          response = await fetch(`https://api.spotify.com/v1/albums/${fromCollectionId}`, { headers });
+          if (!response.ok) throw new Error("Failed to fetch album data");
+          data = await response.json();
+  
+          const tracks = data.tracks.items.map(item => ({
+            uri: item.uri,
+            name: item.name,
+          }));
+  
+          allTracks.current = tracks;
+          setPlaylist(data);
+        } else {
+          throw new Error("Unsupported collection type");
+        }
+  
+        console.log("Fetched tracks:", allTracks.current);
       } catch (error) {
-        console.error("Error fetching playlist data:", error);
+        console.error("Error fetching collection data:", error);
       }
     };
-
-    fetchPlaylistTracks();
-  }, [playlistId, token]);
+  
+    if (fromCollectionId && fromCollectionType && token) {
+      fetchCollectionTracks();
+    }
+  }, [fromCollectionId, fromCollectionType, token]);
 
 
   // Load Spotify SDK and create player

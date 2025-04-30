@@ -76,7 +76,7 @@ const PlaylistSelectIn = () => {
 
   const handleClickPlaylist = (playlistId) => {
     // Navigate to the next page with the selected playlist ID
-    navigate('/swipe-add/' + playlistId, { state: { fromCollectionType: fromCollectionType, fromCollectionId: fromCollectionId} })
+    navigate('/confirm-to-and-from-for-add' , { state: { playlistId: playlistId, fromCollectionType: fromCollectionType, fromCollectionId: fromCollectionId} })
   }
 
   if (loading) {
