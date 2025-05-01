@@ -92,7 +92,7 @@ const ConfirmToAndFromForAdd = () => {
         </div>
 
         <div className="w-full max-w-xs mb-6">
-          <button className="btn w-full shadow" onClick={handleConfirm}>Start Swippinig!</button>
+          <button className="btn w-full shadow" onClick={handleConfirm}>Start Swipping!</button>
         </div>
       </div>
     </MobileWrapper>
