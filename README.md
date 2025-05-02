@@ -25,3 +25,6 @@ VITE_SERVER_URL=https://floating-journey-45917-b9d3c6ebc783.herokuapp.com
 npm run dev
 ```
 
+## Demo
+[DEMO](demo.gif)
+
