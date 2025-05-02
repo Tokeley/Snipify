@@ -1,5 +1,7 @@
 # Snipify
 
+[Check it out](https://snipifyclient.vercel.app)
+
 Snip your playlist into perfection! Snipify is a web app that allows users to remove tracks from their Spotify playlists by simply swiping. Effortlessly curate your playlists and get rid of unwanted songs with ease.
 
 ## Features
